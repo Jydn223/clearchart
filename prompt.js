@@ -30,6 +30,12 @@ fictional data only. Follow these rules exactly:
   "Dose of medication not specified". Use an empty array if nothing is notable.
 - Do NOT give medical advice and do NOT change, add to, or correct the clinician's assessment
   or plan. Only restructure what is written.
+- PROVENANCE: populate "evidence" and each medication's "source" with the EXACT verbatim
+  substring, copied character-for-character from the ORIGINAL note, that each value was drawn
+  from (e.g. evidence.temperature -> "temp 37.9", evidence.patient -> "32F", a medication
+  source -> "amlodipine 5mg OD"). The quote must occur in the note exactly as written so the
+  interface can locate it — never paraphrase, expand abbreviations, or quote from your SOAP
+  rewrite. Use null where the corresponding field is absent.
 - Your output must conform to the provided JSON schema.`;
 
 // Gemini structured-output schema (OpenAPI subset). Nullable scalars allow "field not present".
@@ -98,8 +104,9 @@ export const RESPONSE_SCHEMA = {
               frequency: nullableString,
               route: nullableString,
               duration: nullableString,
+              source: { ...nullableString, description: "Verbatim substring from the note this medication was drawn from." },
             },
-            required: ["name", "dose", "frequency", "route", "duration"],
+            required: ["name", "dose", "frequency", "route", "duration", "source"],
           },
         },
         allergies: {
@@ -124,6 +131,34 @@ export const RESPONSE_SCHEMA = {
       description: "Notes about missing or ambiguous information.",
       items: { type: "string" },
     },
+    evidence: {
+      type: "object",
+      description:
+        "For each populated scalar field, the exact verbatim substring from the original note " +
+        "it was drawn from (character-for-character, so the UI can locate it). Null where absent.",
+      properties: {
+        patient: nullableString,
+        chief_complaint: nullableString,
+        temperature: nullableString,
+        blood_pressure: nullableString,
+        heart_rate: nullableString,
+        respiratory_rate: nullableString,
+        oxygen_saturation: nullableString,
+        weight: nullableString,
+        follow_up: nullableString,
+      },
+      required: [
+        "patient",
+        "chief_complaint",
+        "temperature",
+        "blood_pressure",
+        "heart_rate",
+        "respiratory_rate",
+        "oxygen_saturation",
+        "weight",
+        "follow_up",
+      ],
+    },
   },
-  required: ["soap", "structured", "flags"],
+  required: ["soap", "structured", "flags", "evidence"],
 };

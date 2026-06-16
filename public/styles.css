@@ -164,22 +164,56 @@ h1, h2, h3 { font-family: var(--font-head); margin: 0; line-height: 1.2; }
 .chip--random { color: var(--primary-dark); border-color: #a5e8f2; background: var(--primary-tint); }
 .chip--random:hover { background: #d6f6fb; }
 
-/* ===== Textarea ===== */
-.note-input {
-  width: 100%;
-  min-height: 320px;
-  resize: vertical;
+/* ===== Textarea (with source-highlight backdrop) ===== */
+.note-field { position: relative; width: 100%; }
+
+/* The textarea and its highlight backdrop MUST share identical box metrics
+   (font, line-height, padding, border width, wrapping) so highlighted spans
+   line up exactly with the characters in the textarea. */
+.note-input,
+.note-highlights {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.92rem;
   line-height: 1.6;
-  color: var(--ink);
-  background: #fbfdfe;
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
   padding: 14px 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.note-input {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  resize: vertical;
+  color: var(--ink);
+  background: transparent;          /* let the highlight backdrop show through */
+  border-color: var(--border-strong);
 }
 .note-input::placeholder { color: var(--ink-faint); opacity: 0.85; }
 .note-input:focus-visible { outline: none; border-color: var(--primary); box-shadow: var(--ring); }
+
+.note-highlights {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  color: transparent;               /* only the <mark> backgrounds are visible */
+  background: #fbfdfe;
+  overflow: hidden;                 /* scroll is mirrored from the textarea */
+  pointer-events: none;
+  user-select: none;
+}
+.note-highlights mark {
+  color: transparent;
+  background: #fde8a8;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px #f3c75a;
+}
 
 /* ===== Actions ===== */
 .actions {
@@ -281,6 +315,66 @@ h1, h2, h3 { font-family: var(--font-head); margin: 0; line-height: 1.2; }
 
 /* ===== Results ===== */
 .results { display: flex; flex-direction: column; gap: 18px; }
+
+/* Results toolbar: provenance hint + export actions */
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.results-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+.results-hint svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--primary); }
+.results-tools { display: flex; gap: 8px; }
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-head);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.ghost-btn svg { width: 15px; height: 15px; }
+.ghost-btn:hover { background: var(--primary-tint); color: var(--primary-dark); border-color: #a5e8f2; }
+.ghost-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.ghost-btn.is-done { color: var(--accent-dark); border-color: #a7f3d0; background: #ecfdf5; }
+
+/* Source-traceable values: hover/focus to highlight their origin in the note */
+[data-src] {
+  cursor: help;
+  border-radius: 5px;
+  box-shadow: 0 0 0 0 rgba(8, 145, 178, 0);
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+[data-src]:hover,
+[data-src]:focus-visible {
+  outline: none;
+  background: var(--primary-tint);
+  box-shadow: 0 0 0 2px #a5e8f2;
+}
+/* The vital and medication cards already have padding/borders, so tint subtly instead. */
+.vital[data-src]:hover,
+.vital[data-src]:focus-visible,
+.med[data-src]:hover,
+.med[data-src]:focus-visible {
+  background: var(--primary-tint);
+  border-color: var(--primary);
+}
 
 .card {
   border: 1px solid var(--border);
