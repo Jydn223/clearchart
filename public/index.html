@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClearChart — AI-assisted clinical charting</title>
+    <meta
+      name="description"
+      content="Turn messy free-text consultation notes into a clean, structured clinical record. Portfolio prototype — synthetic data only."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 2h6a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2Z" />
+            <path d="M7 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2" />
+            <path d="m9 14 2 2 4-4" />
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>ClearChart</h1>
+          <p>Scribble in, structured record out</p>
+        </div>
+      </div>
+      <span class="badge" title="This is a demonstration only.">Prototype · synthetic data</span>
+    </header>
+
+    <main class="workspace">
+      <!-- LEFT: input -->
+      <section class="pane pane--input" aria-label="Consultation note input">
+        <div class="pane-head">
+          <h2>Raw consultation note</h2>
+          <button id="clear-btn" type="button" class="text-btn" hidden>Clear</button>
+        </div>
+
+        <div class="examples">
+          <span class="examples-label">Load example</span>
+          <div id="example-row" class="example-row" role="group" aria-label="Example notes">
+            <span class="examples-loading">Loading examples…</span>
+          </div>
+        </div>
+
+        <textarea
+          id="note-input"
+          class="note-input"
+          placeholder="Paste a shorthand consultation note here, e.g.&#10;&#10;32F c/o sore throat x3 days, mild fever, no cough. NKDA. O/E temp 37.9, throat red, tonsils enlarged no exudate, chest clear. Imp viral pharyngitis. Advised rest, fluids, paracetamol PRN. RV in 5/7 if worse."
+          spellcheck="false"
+          aria-label="Raw consultation note"
+        ></textarea>
+
+        <div class="actions">
+          <button id="structure-btn" type="button" class="primary-btn">
+            <span class="btn-label">Structure note</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+          <span id="char-count" class="char-count">0 characters</span>
+        </div>
+      </section>
+
+      <!-- RIGHT: output -->
+      <section class="pane pane--output" aria-label="Structured record output" aria-live="polite">
+        <!-- Empty state -->
+        <div id="empty-state" class="state state--empty">
+          <span class="state-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="M8 13h8M8 17h6M8 9h2" />
+            </svg>
+          </span>
+          <h3>Your structured record appears here</h3>
+          <p>Paste a note (or load an example) and select <strong>Structure note</strong>. The model extracts only what is written — anything missing is flagged, never invented.</p>
+        </div>
+
+        <!-- Error state -->
+        <div id="error-state" class="state state--error" hidden>
+          <span class="state-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
+          </span>
+          <h3>Something went wrong</h3>
+          <p id="error-message">Please try again.</p>
+          <button id="retry-btn" type="button" class="secondary-btn">Try again</button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="results" hidden></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <strong>Not a medical device.</strong> ClearChart only restructures text you paste — it
+        gives no medical advice and never alters a clinician's assessment or plan. All example
+        notes are fictional and synthetic.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

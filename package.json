@@ -1,0 +1,19 @@
+{
+  "name": "clearchart",
+  "version": "1.0.0",
+  "description": "Portfolio prototype: turn messy free-text consultation notes into a clean, structured clinical record using the Gemini API. Synthetic data only — not a medical device.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@google/genai": "^1.9.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
